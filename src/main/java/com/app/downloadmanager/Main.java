@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.security.Key;
 import java.util.Properties;
 
 public class Main {
@@ -42,7 +41,7 @@ public class Main {
             FileInputStream fileInputStream = new FileInputStream(Keys.APP_CONFIG_FILE_NAME);
             properties.load(fileInputStream);
             AppProperties.DEFAULT_SAVE_LOCATION = properties.getProperty(Keys.DEFAULT_SAVE_LOCATION_KEY);
-            AppProperties.DEFAULT_PACKET_SIZE = Integer.parseInt(properties.getProperty(Keys.DEFAULT_PACKET_SIZE_KEY);
+            AppProperties.DEFAULT_PACKET_SIZE = Integer.parseInt(properties.getProperty(Keys.DEFAULT_PACKET_SIZE_KEY));
         }catch (IOException e){
             System.out.println("Error reading property file!");
             System.exit(1);
