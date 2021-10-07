@@ -2,19 +2,29 @@ package com.app.downloadmanager;
 
 import com.app.downloadmanager.utils.classes.AppProperties;
 import com.app.downloadmanager.utils.classes.Keys;
+import com.app.downloadmanager.utils.classes.TableBarMenu;
+import com.app.downloadmanager.utils.classes.UserInterface;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Properties;
 
-public class Main {
+public class Main extends Application {
 
     public static void main(String[] args) {
         if (!propertyFileExists())
             createPropertyFile();
         readAndSetProperties();
+        launch(args);
     }
 
     private static boolean propertyFileExists(){
@@ -49,4 +59,8 @@ public class Main {
         }
     }
 
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        UserInterface.getDownloadManagerStage().show();
+    }
 }
