@@ -1,21 +1,15 @@
 package com.app.downloadmanager;
 
-import com.app.downloadmanager.utils.classes.AppProperties;
-import com.app.downloadmanager.utils.classes.Keys;
-import com.app.downloadmanager.utils.classes.TableBarMenu;
-import com.app.downloadmanager.utils.classes.UserInterface;
+import com.app.downloadmanager.utils.classes.core.AppProperties;
+import com.app.downloadmanager.utils.classes.core.Keys;
+import com.app.downloadmanager.utils.classes.ui.UserInterface;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Properties;
 
 public class Main extends Application {
@@ -60,7 +54,7 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         UserInterface.getDownloadManagerStage().show();
     }
 }

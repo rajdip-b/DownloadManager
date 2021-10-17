@@ -4,8 +4,6 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -13,12 +11,13 @@
 
 <AnchorPane fx:id="anchorPane" prefHeight="611.0" prefWidth="976.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.downloadmanager.controller.DownloadManagerController">
    <children>
-      <HBox layoutX="14.0" layoutY="64.0" prefHeight="43.0" prefWidth="579.0" spacing="20.0">
+      <HBox fx:id="buttonBox" layoutX="14.0" layoutY="64.0" prefHeight="43.0" prefWidth="618.0" spacing="20.0">
          <children>
             <Button mnemonicParsing="false" onAction="#onAddClicked" prefHeight="44.0" prefWidth="121.0" text="Add" />
-            <Button mnemonicParsing="false" onAction="#onStopClicked" prefHeight="44.0" prefWidth="121.0" text="Stop" />
-            <Button mnemonicParsing="false" onAction="#onDeleteClicked" prefHeight="44.0" prefWidth="121.0" text="Delete" />
-            <Button mnemonicParsing="false" onAction="#onDeleteAllClicked" prefHeight="44.0" prefWidth="121.0" text="Delete All" />
+            <Button fx:id="btnPauseResume" mnemonicParsing="false" onAction="#onPauseResumeClicked" prefHeight="44.0" prefWidth="121.0" text="Pause" />
+            <Button fx:id="btnStartStop" mnemonicParsing="false" onAction="#onStartStopClicked" prefHeight="44.0" prefWidth="121.0" text="Stop" />
+            <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#onDeleteClicked" prefHeight="44.0" prefWidth="121.0" text="Delete" />
+            <Button fx:id="btnDeleteAll" mnemonicParsing="false" onAction="#onDeleteAllClicked" prefHeight="44.0" prefWidth="121.0" text="Delete All" />
          </children>
       </HBox>
       <MenuBar layoutY="1.0" prefHeight="27.0" prefWidth="976.0">
@@ -40,114 +39,19 @@
           </Menu>
         </menus>
       </MenuBar>
-      <TabPane fx:id="tabbedPane" layoutX="-1.0" layoutY="157.0" prefHeight="453.0" prefWidth="976.0" tabClosingPolicy="UNAVAILABLE">
-        <tabs>
-          <Tab text="All">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <TableView fx:id="tableAll" onMousePressed="#onMousePressed" prefHeight="433.0" prefWidth="976.0">
-                          <columns>
-                            <TableColumn fx:id="colNameTableAll" prefWidth="107.0" text="Name" />
-                            <TableColumn fx:id="colDownloadedTableAll" prefWidth="107.0" text="Downloaded" />
-                              <TableColumn fx:id="colProgressTableAll" minWidth="5.0" prefWidth="96.0" text="Progress" />
-                              <TableColumn fx:id="colStatusTableAll" minWidth="0.0" prefWidth="74.0" text="Status" />
-                              <TableColumn fx:id="colRemainingTableAll" prefWidth="85.0" text="Remaining" />
-                              <TableColumn fx:id="colTotalTableAll" prefWidth="97.0" text="Total" />
-                              <TableColumn fx:id="colSaveLocationTableAll" prefWidth="164.0" text="Save Location" />
-                              <TableColumn fx:id="colCreatedOnTableAll" prefWidth="128.0" text="Created on" />
-                              <TableColumn fx:id="colFinishedOnTableAll" prefWidth="117.0" text="Finished on" />
-                          </columns>
-                        </TableView>
-                     </children>
-                  </AnchorPane>
-            </content>
-          </Tab>
-            <Tab text="Downloading">
-               <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <TableView fx:id="tableDownloading" onMousePressed="#onMousePressed" prefHeight="433.0" prefWidth="976.0">
-                           <columns>
-                              <TableColumn fx:id="colNameTableDownloading" prefWidth="107.0" text="Name" />
-                              <TableColumn fx:id="colDownloadedTableDownloading" prefWidth="107.0" text="Downloaded" />
-                              <TableColumn fx:id="colProgressTableDownloading" minWidth="5.0" prefWidth="96.0" text="Progress" />
-                              <TableColumn fx:id="colStatusTableDownloading" minWidth="0.0" prefWidth="74.0" text="Status" />
-                              <TableColumn fx:id="colRemainingTableDownloading" prefWidth="85.0" text="Remaining" />
-                              <TableColumn fx:id="colTotalTableDownloading" prefWidth="97.0" text="Total" />
-                              <TableColumn fx:id="colSaveLocationTableDownloading" prefWidth="164.0" text="Save Location" />
-                              <TableColumn fx:id="colCreatedOnTableDownloading" prefWidth="128.0" text="Created on" />
-                              <TableColumn fx:id="colFinishedOnTableDownloading" prefWidth="117.0" text="Finished on" />
-                           </columns>
-                        </TableView>
-                     </children>
-                  </AnchorPane>
-               </content>
-            </Tab>
-            <Tab text="Finished">
-               <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <TableView fx:id="tableFinished" onMousePressed="#onMousePressed" prefHeight="433.0" prefWidth="976.0">
-                           <columns>
-                              <TableColumn fx:id="colNameTableFinished" prefWidth="107.0" text="Name" />
-                              <TableColumn fx:id="colDownloadedTableFinished" prefWidth="107.0" text="Downloaded" />
-                              <TableColumn fx:id="colProgressTableFinished" minWidth="5.0" prefWidth="96.0" text="Progress" />
-                              <TableColumn fx:id="colStatusTableFinished" minWidth="0.0" prefWidth="74.0" text="Status" />
-                              <TableColumn fx:id="colRemainingTableFinished" prefWidth="85.0" text="Remaining" />
-                              <TableColumn fx:id="colTotalTableFinished" prefWidth="97.0" text="Total" />
-                              <TableColumn fx:id="colSaveLocationTableFinished" prefWidth="164.0" text="Save Location" />
-                              <TableColumn fx:id="colCreatedOnTableFinished" prefWidth="128.0" text="Created on" />
-                              <TableColumn fx:id="colFinishedOnTableFinished" prefWidth="117.0" text="Finished on" />
-                           </columns>
-                        </TableView>
-                     </children>
-                  </AnchorPane>
-               </content>
-            </Tab>
-            <Tab text="Stopped">
-               <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <TableView fx:id="tableStopped" onMousePressed="#onMousePressed" prefHeight="433.0" prefWidth="976.0">
-                           <columns>
-                              <TableColumn fx:id="colNameTableStopped" prefWidth="107.0" text="Name" />
-                              <TableColumn fx:id="colDownloadedTableStopped" prefWidth="107.0" text="Downloaded" />
-                              <TableColumn fx:id="colProgressTableStopped" minWidth="5.0" prefWidth="96.0" text="Progress" />
-                              <TableColumn fx:id="colStatusTableStopped" minWidth="0.0" prefWidth="74.0" text="Status" />
-                              <TableColumn fx:id="colRemainingTableStopped" prefWidth="85.0" text="Remaining" />
-                              <TableColumn fx:id="colTotalTableStopped" prefWidth="97.0" text="Total" />
-                              <TableColumn fx:id="colSaveLocationTableStopped" prefWidth="164.0" text="Save Location" />
-                              <TableColumn fx:id="colCreatedOnTableStopped" prefWidth="128.0" text="Created on" />
-                              <TableColumn fx:id="colFinishedOnTableStopped" prefWidth="117.0" text="Finished on" />
-                           </columns>
-                        </TableView>
-                     </children>
-                  </AnchorPane>
-               </content>
-            </Tab>
-            <Tab text="Error">
-               <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <TableView fx:id="tableError" onMousePressed="#onMousePressed" prefHeight="433.0" prefWidth="976.0">
-                           <columns>
-                              <TableColumn fx:id="colNameTableError" prefWidth="107.0" text="Name" />
-                              <TableColumn fx:id="colDownloadedTableError" prefWidth="107.0" text="Downloaded" />
-                              <TableColumn fx:id="colProgressTableError" minWidth="5.0" prefWidth="96.0" text="Progress" />
-                              <TableColumn fx:id="colStatusTableError" minWidth="0.0" prefWidth="74.0" text="Status" />
-                              <TableColumn fx:id="colRemainingTableError" prefWidth="85.0" text="Remaining" />
-                              <TableColumn fx:id="colTotalTableError" prefWidth="97.0" text="Total" />
-                              <TableColumn fx:id="colSaveLocationTableError" prefWidth="164.0" text="Save Location" />
-                              <TableColumn fx:id="colCreatedOnTableError" prefWidth="128.0" text="Created on" />
-                              <TableColumn fx:id="colFinishedOnTableError" prefWidth="117.0" text="Finished on" />
-                           </columns>
-                        </TableView>
-                     </children>
-                  </AnchorPane>
-               </content>
-            </Tab>
-        </tabs>
-      </TabPane>
+      <TableView fx:id="tableAll" layoutY="147.0" onMouseClicked="#onTableClicked" prefHeight="464.0" prefWidth="976.0">
+         <columns>
+            <TableColumn fx:id="colNameTableAll" prefWidth="107.0" text="Name" />
+            <TableColumn fx:id="colDownloadedTableAll" prefWidth="107.0" text="Downloaded" />
+            <TableColumn fx:id="colProgressTableAll" minWidth="5.0" prefWidth="96.0" text="Progress" />
+            <TableColumn fx:id="colSpeedTableAll" minWidth="5.0" prefWidth="96.0" text="Speed" />
+            <TableColumn fx:id="colStatusTableAll" minWidth="0.0" prefWidth="74.0" text="Status" />
+            <TableColumn fx:id="colRemainingTableAll" prefWidth="85.0" text="Remaining" />
+            <TableColumn fx:id="colTotalTableAll" prefWidth="97.0" text="Total" />
+            <TableColumn fx:id="colSaveLocationTableAll" prefWidth="164.0" text="Save Location" />
+            <TableColumn fx:id="colCreatedOnTableAll" prefWidth="128.0" text="Created on" />
+            <TableColumn fx:id="colFinishedOnTableAll" prefWidth="117.0" text="Finished on" />
+         </columns>
+      </TableView>
    </children>
 </AnchorPane>

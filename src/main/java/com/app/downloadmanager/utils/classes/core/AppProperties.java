@@ -1,4 +1,4 @@
-package com.app.downloadmanager.utils.classes;
+package com.app.downloadmanager.utils.classes.core;
 
 public class AppProperties {
 
