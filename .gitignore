@@ -2,3 +2,5 @@
 /target/
 /.idea/
 /appconfig.ini
+/database/
+/derby.log
