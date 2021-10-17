@@ -15,9 +15,11 @@ public class Keys {
 
     public static final int STATUS_GET_SUCCESSFUL = 1;
     public static final int STATUS_CONNECTION_ERROR = 2;
+    public static final int STATUS_BAD_URL = 3;
 
     public static final String STRING_GATHERING_INFO = "Gathering information...";
     public static final String STRING_ERROR_NO_INTERNET = "No internet connection!";
+    public static final String STRING_ERROR_BAD_URL = "Invalid url!";
     public static final String STRING_SAVE_FILE = "Save file...";
 
 }

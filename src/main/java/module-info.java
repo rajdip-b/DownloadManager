@@ -1,6 +1,7 @@
 module com.app.downloadmanager.downloadmanager {
     requires javafx.controls;
     requires javafx.fxml;
+    requires java.sql;
 
     exports com.app.downloadmanager.controller;
     opens com.app.downloadmanager.controller;

@@ -80,7 +80,7 @@ public class AddDownloadController {
 
     @FXML
     public void onAddClicked(){
-        File file = new File(fileName, saveLocation, new Date().toString(), txtURL.getText(), inputStream, httpsURLConnection);
+        File file = new File(fileName, saveLocation, new Date().toString(), txtURL.getText());
         file.setTotal(contentLength);
         file.setRemaining(contentLength);
         downloadManagerUIEventListener.onDownloadAdded(file);
@@ -104,15 +104,13 @@ public class AddDownloadController {
     public void onTextChangedEvent(String url){
         Platform.runLater(() -> lblLoading.setText(Keys.STRING_GATHERING_INFO));
         lblLoading.setVisible(true);
-        if (URLChecker.isURLValid(url) == Keys.STATUS_GET_SUCCESSFUL){
+        int statusCode = URLChecker.isURLValid(url);
+        if (statusCode == Keys.STATUS_GET_SUCCESSFUL){
             urlValidProperty.set(true);
             HashMap<String, Object> fileInfo = URLChecker.getFileInfo(url);
-            assert fileInfo != null;
             fileName = (String) fileInfo.get(URLChecker.KEY_FILE_NAME);
             contentLength = (Long) fileInfo.get(URLChecker.KEY_CONTENT_LENGTH);
             contentType = (String) fileInfo.get(URLChecker.KEY_CONTENT_TYPE);
-            inputStream = new BufferedInputStream((InputStream) fileInfo.get(URLChecker.KEY_CONTENT_STREAM));
-            httpsURLConnection = (HttpsURLConnection) fileInfo.get(URLChecker.KEY_HTTPS_URL_CONNECTION);
             Platform.runLater(() ->{
                 txtSaveLocation.setText(AppProperties.DEFAULT_SAVE_LOCATION);
                 txtFileName.setText(fileName);
@@ -120,8 +118,17 @@ public class AddDownloadController {
                 lblFileType.setText(contentType);
             });
             lblLoading.setVisible(false);
-        }else{
+        }else if (statusCode == Keys.STATUS_CONNECTION_ERROR){
             Platform.runLater(() -> lblLoading.setText(Keys.STRING_ERROR_NO_INTERNET));
+            urlValidProperty.set(false);
+            Platform.runLater(() ->{
+                txtSaveLocation.setText("");
+                txtFileName.setText("");
+                lblFileSize.setText("");
+                lblFileType.setText("");
+            });
+        }else if (statusCode == Keys.STATUS_BAD_URL){
+            Platform.runLater(() -> lblLoading.setText(Keys.STRING_ERROR_BAD_URL));
             urlValidProperty.set(false);
             Platform.runLater(() ->{
                 txtSaveLocation.setText("");

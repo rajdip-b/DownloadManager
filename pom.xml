@@ -27,6 +27,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <version>10.12.1.1</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit.version}</version>
@@ -61,7 +67,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                com.app.downloadmanager.downloadmanager/com.app.downloadmanager.HelloApplication
+                                com.app.downloadmanager.downloadmanager/com.app.downloadmanager.Main
                             </mainClass>
                         </configuration>
                     </execution>

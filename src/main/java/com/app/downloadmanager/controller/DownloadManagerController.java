@@ -1,6 +1,7 @@
 package com.app.downloadmanager.controller;
 
 import com.app.downloadmanager.model.File;
+import com.app.downloadmanager.utils.classes.core.DatabaseHandler;
 import com.app.downloadmanager.utils.classes.core.Keys;
 import com.app.downloadmanager.utils.classes.networking.Downloader;
 import com.app.downloadmanager.utils.classes.ui.TableHeaderBarMenu;
@@ -20,6 +21,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class DownloadManagerController implements DownloadManagerUIEventListener, DownloadManagerNetworkEventListener {
 
@@ -53,6 +55,8 @@ public class DownloadManagerController implements DownloadManagerUIEventListener
     public void initialize(){
         initializeTableAll();
         TableHeaderBarMenu tableHeaderBarMenu = new TableHeaderBarMenu();
+        for (File file : Objects.requireNonNull(DatabaseHandler.getAllDownloads()))
+            createNewDownload(file);
         tableAll.setContextMenu(tableHeaderBarMenu.getMenu());
         btnDelete.setDisable(true);
         btnDeleteAll.setDisable(true);
@@ -103,6 +107,7 @@ public class DownloadManagerController implements DownloadManagerUIEventListener
                         tableAllFiles.remove(selectedFile);
                     }
                 }));
+                DatabaseHandler.deleteDownload(selectedFile);
             }
         }));
         tableAllFiles.remove(selectedFile);
@@ -174,7 +179,7 @@ public class DownloadManagerController implements DownloadManagerUIEventListener
                     btnStartStop.setText("Start");
                     btnStartStop.setDisable(true);
                     btnDelete.setDisable(false);
-                    btnPauseResume.setDisable(false);
+                    btnPauseResume.setDisable(true);
                     btnStartStop.setDisable(false);
                     btnDeleteAll.setDisable(false);
                 }
@@ -197,50 +202,48 @@ public class DownloadManagerController implements DownloadManagerUIEventListener
     @Override
     public void onDownloadAdded(File file) {
         buttonBox.setDisable(false);
-        tableAllFiles.add(file);
+        if (DatabaseHandler.insertDownload(file) == 1){
+            Platform.runLater(() -> new Alert(Alert.AlertType.ERROR, "Another download with the same link already exists!").show());
+            return;
+        }
         currentStage.close();
+        createNewDownload(file);
+    }
+
+    private void createNewDownload(File file){
+        tableAllFiles.add(file);
         file.statusProperty().addListener(((observable, oldValue, newValue) -> {
             switch (newValue.intValue()){
-                case Keys.STATUS_DOWNLOADING -> {
-                    Platform.runLater(() -> {
-                        btnPauseResume.setText("Pause");
-                        btnStartStop.setText("Stop");
-                        btnPauseResume.setDisable(false);
-                        btnStartStop.setDisable(false);
-                    });
-                }
-                case Keys.STATUS_PAUSED -> {
-                    Platform.runLater(() -> {
-                        btnPauseResume.setText("Resume");
-                        btnStartStop.setText("Stop");
-                        btnPauseResume.setDisable(false);
-                        btnStartStop.setDisable(false);
-                    });
-                }
-                case Keys.STATUS_STOPPED -> {
-                    Platform.runLater(() -> {
-                        btnPauseResume.setText("Pause");
-                        btnStartStop.setText("Start");
-                        btnPauseResume.setDisable(true);
-                        btnStartStop.setDisable(false);
-                    });
-                }
-                case Keys.STATUS_NULL, Keys.STATUS_FINISHED -> {
-                    Platform.runLater(() -> {
-                        btnPauseResume.setText("Pause");
-                        btnStartStop.setText("Stop");
-                        btnPauseResume.setDisable(true);
-                        btnStartStop.setDisable(true);
-                    });
-                }
-                case Keys.STATUS_ERROR -> {
-                    Platform.runLater(() -> {
-                        btnPauseResume.setText("Pause");
-                        btnStartStop.setText("Stop");
-                        btnPauseResume.setDisable(true);
-                        btnStartStop.setDisable(false);
-                    });
-                }
+                case Keys.STATUS_DOWNLOADING -> Platform.runLater(() -> {
+                    btnPauseResume.setText("Pause");
+                    btnStartStop.setText("Stop");
+                    btnPauseResume.setDisable(false);
+                    btnStartStop.setDisable(false);
+                });
+                case Keys.STATUS_PAUSED -> Platform.runLater(() -> {
+                    btnPauseResume.setText("Resume");
+                    btnStartStop.setText("Stop");
+                    btnPauseResume.setDisable(false);
+                    btnStartStop.setDisable(false);
+                });
+                case Keys.STATUS_STOPPED -> Platform.runLater(() -> {
+                    btnPauseResume.setText("Pause");
+                    btnStartStop.setText("Start");
+                    btnPauseResume.setDisable(true);
+                    btnStartStop.setDisable(false);
+                });
+                case Keys.STATUS_NULL, Keys.STATUS_FINISHED -> Platform.runLater(() -> {
+                    btnPauseResume.setText("Pause");
+                    btnStartStop.setText("Stop");
+                    btnPauseResume.setDisable(true);
+                    btnStartStop.setDisable(true);
+                });
+                case Keys.STATUS_ERROR -> Platform.runLater(() -> {
+                    btnPauseResume.setText("Pause");
+                    btnStartStop.setText("Stop");
+                    btnPauseResume.setDisable(true);
+                    btnStartStop.setDisable(false);
+                });
             }
         }));
         try{
@@ -257,18 +260,20 @@ public class DownloadManagerController implements DownloadManagerUIEventListener
     }
 
     @Override
-    public void onProgressChanged() {
+    public synchronized void onProgressChanged(File file) {
         tableAll.refresh();
+        DatabaseHandler.updateDownloadSizeAndProgress(file);
     }
 
     @Override
-    public void onDownloadFinished(String filename) {
+    public synchronized void onDownloadFinished(File file) {
         tableAll.refresh();
-        Platform.runLater(() -> new Alert(Alert.AlertType.INFORMATION, filename + " has finished downloading!").show());
+        DatabaseHandler.updateFinishedDate(file);
+        Platform.runLater(() -> new Alert(Alert.AlertType.INFORMATION, file.getFileName() + " has finished downloading!").show());
     }
 
     @Override
-    public void onErrorOccurred(String errorMessage) {
+    public synchronized void onErrorOccurred(String errorMessage) {
         tableAll.refresh();
         Platform.runLater(() -> new Alert(Alert.AlertType.ERROR, errorMessage).show());
     }

@@ -23,10 +23,10 @@ public class Downloader {
     public Downloader(File file, DownloadManagerNetworkEventListener downloadManagerNetworkEventListener) throws FileNotFoundException {
         this.file = file;
         isActive = true;
-        inputStream = file.getInputStream();
-        httpsURLConnection = file.getHttpsURLConnection();
-        httpsURLConnection.setReadTimeout(5000);
-        httpsURLConnection.setConnectTimeout(8000);
+//        inputStream = file.getInputStream();
+//        httpsURLConnection = ur;
+//        httpsURLConnection.setReadTimeout(5000);
+//        httpsURLConnection.setConnectTimeout(8000);
         this.downloadManagerNetworkEventListener = downloadManagerNetworkEventListener;
         file.setDownloadManagerNetworkEventListener(downloadManagerNetworkEventListener);
         file.statusProperty().addListener(((observable, oldValue, newValue) -> {
@@ -43,7 +43,7 @@ public class Downloader {
                         try{
                             fileOutputStream = new RandomAccessFile(file.getSaveLocation()+"/"+file.getFileName(), "rw");
                         } catch (FileNotFoundException e) {
-                            e.printStackTrace();
+//                            e.printStackTrace();
                         }
                     }
                     if (cachedFile.exists()){ // Gets triggered if the file in the download list already exists in the location specified
@@ -72,9 +72,10 @@ public class Downloader {
                             file.setRemaining(0);
                             file.setDownloadedSize(file.getTotalSizeLong());
                             file.setProgress(1.0);
+//                            e.printStackTrace();
                             return;
                         } catch (IOException e){
-                            e.printStackTrace();
+//                            e.printStackTrace();
 //                            downloadManagerNetworkEventListener.onErrorOccurred("Connection to internet lost while downloading "+file.getFileName());
                             return;
                         }
@@ -87,7 +88,6 @@ public class Downloader {
         file.setStatus(Keys.STATUS_DOWNLOADING);
         if (file.getDownloadedSizeLong() == file.getTotalSizeLong()) { // Temporary code, changes the status if an already downloaded file is added again
             file.setStatus(Keys.STATUS_FINISHED);
-//            downloadManagerNetworkEventListener.onDownloadFinished(file.getFileName());
         }
     }
 
@@ -102,10 +102,10 @@ public class Downloader {
                         double progress = (double) file.getDownloadedSizeLong() / file.getTotalSizeLong();
                         file.setProgress(progress);
                     }
-                    downloadManagerNetworkEventListener.onProgressChanged();
+                    downloadManagerNetworkEventListener.onProgressChanged(file);
                 }
             } catch (Exception e) {
-                    e.printStackTrace();
+//                e.printStackTrace();
                     if (isActive){
                         downloadManagerNetworkEventListener.onErrorOccurred("Connection to internet lost while downloading "+file.getFileName());
                         file.setStatus(Keys.STATUS_ERROR);
@@ -124,7 +124,8 @@ public class Downloader {
             httpsURLConnection.disconnect();
             httpsURLConnection = null;  // remove the current url connection
             thread.interrupt(); // final step to close the ongoing download
-        }catch (Exception ignored){
+        }catch (Exception e){
+//            e.printStackTrace();
         }
     }
 

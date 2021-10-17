@@ -38,7 +38,7 @@ public class File {
         status = new SimpleIntegerProperty();
         progressBar = new ProgressBar();
         progressBar.setMinWidth(190);
-        progressBar.setMinHeight(30);
+        progressBar.setMinHeight(25);
         fileName = "";
         downloadedSize = 0L;
         progress = 0.0d;
@@ -55,29 +55,29 @@ public class File {
             startTime = System.currentTimeMillis();
             tempDownloadedSize = 0;
             speed = 0;
-            switch (newValue.intValue()){
-                case Keys.STATUS_DOWNLOADING -> progressBar.setStyle("-fx-accent: rgb(39, 195, 230)");
-                case Keys.STATUS_PAUSED, Keys.STATUS_STOPPED -> progressBar.setStyle("-fx-accent: rgb(122, 122, 122)");
-                case Keys.STATUS_ERROR -> progressBar.setStyle("-fx-accent: rgb(235, 54, 54)");
-                case Keys.STATUS_FINISHED -> {
-                    progressBar.setStyle("-fx-accent: rgb(54, 235, 99)");
-                    downloadManagerNetworkEventListener.onDownloadFinished(fileName);
-                    speed = 0;
-                    setRemaining(0);
-                    setFinishedOn(new Date().toString());
+            try{
+                switch (newValue.intValue()){
+                    case Keys.STATUS_DOWNLOADING -> progressBar.setStyle("-fx-accent: rgb(39, 195, 230)");
+                    case Keys.STATUS_PAUSED, Keys.STATUS_STOPPED -> progressBar.setStyle("-fx-accent: rgb(122, 122, 122)");
+                    case Keys.STATUS_ERROR -> progressBar.setStyle("-fx-accent: rgb(235, 54, 54)");
+                    case Keys.STATUS_FINISHED -> {
+                        progressBar.setStyle("-fx-accent: rgb(54, 235, 99)");
+                        downloadManagerNetworkEventListener.onDownloadFinished(this);
+                        speed = 0;
+                        setRemaining(0);
+                        setFinishedOn(new Date().toString());
+                    }
                 }
-            }
+            }catch (NullPointerException ignored){}
         }));
     }
 
-    public File(String fileName, String saveLocation, String createdOn, String url, BufferedInputStream inputStream, HttpsURLConnection httpsURLConnection){
+    public File(String fileName, String saveLocation, String createdOn, String url){
         this();
         this.fileName = fileName;
         this.saveLocation = saveLocation;
         this.createdOn = createdOn;
         this.url = url;
-        this.inputStream = inputStream;
-        this.httpsURLConnection = httpsURLConnection;
         remainingSize = totalSize;
     }
 
@@ -116,7 +116,7 @@ public class File {
     public void setDownloadedSize(long downloadedSize) {
         this.downloadedSize = downloadedSize;
         tempDownloadedSize = tempDownloadedSize+ AppProperties.DEFAULT_PACKET_SIZE;
-        speed = (double) tempDownloadedSize / (System.currentTimeMillis() - startTime);
+        speed = tempDownloadedSize / (System.currentTimeMillis() - startTime);
         if (this.downloadedSize >= totalSize) {
             setStatus(Keys.STATUS_FINISHED);
         }
@@ -170,6 +170,10 @@ public class File {
     public ProgressBar getProgress() {
         progressBar.setProgress(progress);
         return progressBar;
+    }
+
+    public double getProgressDouble(){
+        return progress;
     }
 
     public String getStatusStr() {
@@ -253,4 +257,21 @@ public class File {
             return String.format("%4.2f %s", bytes, prefixes[level]);
     }
 
+    @Override
+    public String toString() {
+        return "File{" +
+                "fileName='" + fileName + '\'' +
+                ", speed=" + speed +
+                ", downloadedSize=" + downloadedSize +
+                ", progress=" + progress +
+                ", status=" + statusStr +
+                ", remainingSize=" + remainingSize +
+                ", totalSize=" + totalSize +
+                ", url='" + url + '\'' +
+                ", saveLocation='" + saveLocation + '\'' +
+                ", createdOn='" + createdOn + '\'' +
+                ", finishedOn='" + finishedOn + '\'' +
+                ", isPausable=" + isPausable +
+                '}';
+    }
 }
