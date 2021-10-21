@@ -18,7 +18,7 @@ public class PropertyManager {
         try {
             file.createNewFile();
             FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write(String.format("%s=%s\n", Keys.DEFAULT_SAVE_LOCATION_KEY, System.getenv("HOME")));
+            fileWriter.write(String.format("%s=%s\n", Keys.DEFAULT_SAVE_LOCATION_KEY, System.getProperty("user.home")));
             fileWriter.write(String.format("%s=%s\n", Keys.DEFAULT_PACKET_SIZE_KEY, 1024));
             fileWriter.close();
         } catch (IOException e) {
