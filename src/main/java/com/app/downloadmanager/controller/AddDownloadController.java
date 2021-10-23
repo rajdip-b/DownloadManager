@@ -51,7 +51,7 @@ public class AddDownloadController {
     @FXML
     public void initialize(){
         fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new java.io.File(AppProperties.DEFAULT_SAVE_LOCATION));
+        fileChooser.setInitialDirectory(new java.io.File(AppProperties.DEFAULT_SAVE_LOCATION + java.io.File.separator+ "Downloads"));
         fileChooser.setTitle(Keys.STRING_SAVE_FILE);
         lblLoading.setVisible(false);
         txtFileName.setDisable(true);
@@ -83,6 +83,7 @@ public class AddDownloadController {
         File file = new File(fileName, saveLocation, new Date().toString(), txtURL.getText());
         file.setTotal(contentLength);
         file.setRemaining(contentLength);
+        file.setStatus(Keys.STATUS_DOWNLOADING);
         downloadManagerUIEventListener.onDownloadAdded(file);
     }
 
@@ -112,7 +113,7 @@ public class AddDownloadController {
             contentLength = (Long) fileInfo.get(URLChecker.KEY_CONTENT_LENGTH);
             contentType = (String) fileInfo.get(URLChecker.KEY_CONTENT_TYPE);
             Platform.runLater(() ->{
-                txtSaveLocation.setText(AppProperties.DEFAULT_SAVE_LOCATION);
+                txtSaveLocation.setText(AppProperties.DEFAULT_SAVE_LOCATION + java.io.File.separator + "Downloads");
                 txtFileName.setText(fileName);
                 lblFileSize.setText(File.convertSizeToHighestMagnitude(contentLength, 0));
                 lblFileType.setText(contentType);

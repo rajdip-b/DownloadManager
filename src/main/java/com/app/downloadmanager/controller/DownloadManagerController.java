@@ -19,6 +19,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -48,6 +49,7 @@ public class DownloadManagerController implements DownloadManagerUIEventListener
     private ObservableList<File> tableAllFiles;
 
     public static List<TableColumn<File, String>> listColumnsTableAll;
+    private List<Downloader> downloaders;
 
     private Stage currentStage;
 
@@ -55,8 +57,11 @@ public class DownloadManagerController implements DownloadManagerUIEventListener
     public void initialize(){
         initializeTableAll();
         TableHeaderBarMenu tableHeaderBarMenu = new TableHeaderBarMenu();
-        for (File file : Objects.requireNonNull(DatabaseHandler.getAllDownloads()))
+        downloaders = new ArrayList<>();
+        for (File file : Objects.requireNonNull(DatabaseHandler.getAllDownloads())) {
+            System.out.println(file.getStatusStr());
             createNewDownload(file);
+        }
         tableAll.setContextMenu(tableHeaderBarMenu.getMenu());
         btnDelete.setDisable(true);
         btnDeleteAll.setDisable(true);
@@ -247,7 +252,7 @@ public class DownloadManagerController implements DownloadManagerUIEventListener
             }
         }));
         try{
-            new Downloader(file, this);
+            downloaders.add(new Downloader(file, this));
         }catch (IOException e){
             Platform.runLater(() -> new Alert(Alert.AlertType.ERROR, "Can't create the file over here!"));
         }
@@ -269,6 +274,14 @@ public class DownloadManagerController implements DownloadManagerUIEventListener
     public synchronized void onDownloadFinished(File file) {
         tableAll.refresh();
         DatabaseHandler.updateFinishedDate(file);
+        for (Downloader downloader : downloaders){
+            if (downloader.getFile() == file){
+                downloader.setActive(false);
+//                downloader.destroyConnection();
+                downloaders.remove(downloader);
+                break;
+            }
+        }
         Platform.runLater(() -> new Alert(Alert.AlertType.INFORMATION, file.getFileName() + " has finished downloading!").show());
     }
 

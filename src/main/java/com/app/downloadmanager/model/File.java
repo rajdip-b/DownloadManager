@@ -1,6 +1,7 @@
 package com.app.downloadmanager.model;
 
 import com.app.downloadmanager.utils.classes.core.AppProperties;
+import com.app.downloadmanager.utils.classes.core.DatabaseHandler;
 import com.app.downloadmanager.utils.classes.core.Keys;
 import com.app.downloadmanager.utils.interfaces.DownloadManagerNetworkEventListener;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -136,6 +137,7 @@ public class File {
     public void setStatus(int status) {
         this.status.set(status);
         statusStr = statuses[status];
+        DatabaseHandler.updateStatus(this);
     }
 
     public void setRemaining(long remainingSize) {

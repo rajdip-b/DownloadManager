@@ -22,11 +22,7 @@ public class Downloader {
 
     public Downloader(File file, DownloadManagerNetworkEventListener downloadManagerNetworkEventListener) throws FileNotFoundException {
         this.file = file;
-        isActive = true;
-//        inputStream = file.getInputStream();
-//        httpsURLConnection = ur;
-//        httpsURLConnection.setReadTimeout(5000);
-//        httpsURLConnection.setConnectTimeout(8000);
+        isActive = false;
         this.downloadManagerNetworkEventListener = downloadManagerNetworkEventListener;
         file.setDownloadManagerNetworkEventListener(downloadManagerNetworkEventListener);
         file.statusProperty().addListener(((observable, oldValue, newValue) -> {
@@ -35,6 +31,12 @@ public class Downloader {
                 case Keys.STATUS_STOPPED -> {
                     isActive = false; // auto pause when stop is clicked
                     destroyConnection();
+                }
+                case Keys.STATUS_FINISHED -> {
+                    try {
+                        fileOutputStream.close();
+                    } catch (IOException e) {
+                    }
                 }
                 case Keys.STATUS_DOWNLOADING -> {
                     java.io.File cachedFile = new java.io.File(file.getSaveLocation()+"/"+file.getFileName()); // reference to the file (might be non-existent)
@@ -85,7 +87,11 @@ public class Downloader {
                 }
             }
         }));
-        file.setStatus(Keys.STATUS_DOWNLOADING);
+        if (file.getStatusInteger() == Keys.STATUS_DOWNLOADING){
+            file.setStatus(Keys.STATUS_NULL);
+            file.setStatus(Keys.STATUS_DOWNLOADING);
+            isActive = true;
+        }
         if (file.getDownloadedSizeLong() == file.getTotalSizeLong()) { // Temporary code, changes the status if an already downloaded file is added again
             file.setStatus(Keys.STATUS_FINISHED);
         }
@@ -94,7 +100,7 @@ public class Downloader {
     private void initializeNewDownloadThread(){
         thread = new Thread(() -> {
             try {
-                while(inputStream.available() > 0 && isActive) {
+                while(isActive) {
                     fileOutputStream.write(inputStream.readNBytes(AppProperties.DEFAULT_PACKET_SIZE));
                     file.setDownloadedSize(file.getDownloadedSizeLong()+AppProperties.DEFAULT_PACKET_SIZE);
                     if(file.isPausable()) {
@@ -105,7 +111,6 @@ public class Downloader {
                     downloadManagerNetworkEventListener.onProgressChanged(file);
                 }
             } catch (Exception e) {
-//                e.printStackTrace();
                     if (isActive){
                         downloadManagerNetworkEventListener.onErrorOccurred("Connection to internet lost while downloading "+file.getFileName());
                         file.setStatus(Keys.STATUS_ERROR);
@@ -115,7 +120,7 @@ public class Downloader {
         });
     }
 
-    private void destroyConnection(){
+    public void destroyConnection(){
         try {
             inputStream.close();
             inputStream = null; // remove the current connection input stream
@@ -127,6 +132,14 @@ public class Downloader {
         }catch (Exception e){
 //            e.printStackTrace();
         }
+    }
+
+    public File getFile(){
+        return file;
+    }
+
+    public void setActive(boolean isActive){
+        this.isActive = isActive;
     }
 
 }

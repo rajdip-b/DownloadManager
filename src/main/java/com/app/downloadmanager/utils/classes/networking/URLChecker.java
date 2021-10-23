@@ -24,8 +24,9 @@ public class URLChecker {
             httpsURLConnection = (HttpsURLConnection) url.openConnection();
             if (httpsURLConnection.getResponseCode() == 200)
                 return Keys.STATUS_GET_SUCCESSFUL;
-            else
+            else {
                 return Keys.STATUS_CONNECTION_ERROR;
+            }
         } catch (MalformedURLException e) {
             return Keys.STATUS_BAD_URL;
         } catch (IOException e){

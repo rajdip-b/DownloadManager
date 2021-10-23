@@ -25,6 +25,7 @@ public class Main extends Application {
         if (!DatabaseHandler.checkConnection())
             DatabaseHandler.createDatabase();
         launch(args);
+        System.exit(1);
     }
 
     @Override

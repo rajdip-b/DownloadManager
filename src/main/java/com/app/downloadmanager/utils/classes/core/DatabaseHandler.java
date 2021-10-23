@@ -20,6 +20,7 @@ public class DatabaseHandler {
     private static final int INDEX_PROGRESS = 8;
     private static final int INDEX_SAVE_LOCATION = 9;
     private static final int INDEX_IS_PAUSABLE = 10;
+    private static final int INDEX_STATUS = 11;
 
     public static boolean checkConnection(){
         try{
@@ -35,7 +36,7 @@ public class DatabaseHandler {
             connection = DriverManager.getConnection("jdbc:derby:database;create=true;");
             Statement statement = connection.createStatement();
             statement.execute("create schema download_manager");
-            statement.execute("create table download_manager.downloads (file_name varchar(200) unique, total_size int, remaining_size int, downloaded_size int, url varchar(1000) unique, created_on varchar(100), finished_on varchar(100), progress double, save_location varchar(200), is_pausable varchar(10))");
+            statement.execute("create table download_manager.downloads (file_name varchar(200) unique, total_size int, remaining_size int, downloaded_size int, url varchar(1000) unique, created_on varchar(100), finished_on varchar(100), progress double, save_location varchar(200), is_pausable varchar(10), status int)");
         } catch (SQLException e) {
             e.printStackTrace();
             System.exit(1);
@@ -44,7 +45,7 @@ public class DatabaseHandler {
 
     public static int insertDownload(File file) {
         try{
-            PreparedStatement preparedStatement = connection.prepareStatement("insert into download_manager.downloads values(?,?,?,?,?,?,?,?,?,?)");
+            PreparedStatement preparedStatement = connection.prepareStatement("insert into download_manager.downloads values(?,?,?,?,?,?,?,?,?,?,?)");
             preparedStatement.setString(INDEX_FILE_NAME, file.getFileName());
             preparedStatement.setDouble(INDEX_TOTAL_SIZE, file.getTotalSizeLong());
             preparedStatement.setDouble(INDEX_REMAINING_SIZE, file.getRemainingSizeLong());
@@ -55,6 +56,7 @@ public class DatabaseHandler {
             preparedStatement.setDouble(INDEX_PROGRESS, file.getProgressDouble());
             preparedStatement.setString(INDEX_SAVE_LOCATION, file.getSaveLocation());
             preparedStatement.setString(INDEX_IS_PAUSABLE, String.valueOf(file.isPausable()));
+            preparedStatement.setInt(INDEX_STATUS, file.getStatusInteger());
             preparedStatement.executeUpdate();
             return 0;
         }catch (SQLIntegrityConstraintViolationException e){
@@ -81,6 +83,7 @@ public class DatabaseHandler {
                 file.setProgress(resultSet.getDouble(INDEX_PROGRESS));
                 file.setSaveLocation(resultSet.getString(INDEX_SAVE_LOCATION));
                 file.setPausable(Boolean.parseBoolean(resultSet.getString(INDEX_IS_PAUSABLE)));
+                file.setStatus(resultSet.getInt(INDEX_STATUS));
                 files.add(file);
             }
             return files;
@@ -99,9 +102,8 @@ public class DatabaseHandler {
             preparedStatement.setDouble(3, file.getProgressDouble());
             preparedStatement.setString(4, file.getFileName());
             preparedStatement.executeUpdate();
-        }catch (SQLException e){
-            e.printStackTrace();
-            System.exit(1);
+        } catch (SQLException e){
+//            e.printStackTrace();
         }
     }
 
@@ -125,6 +127,18 @@ public class DatabaseHandler {
         }catch (SQLException e){
             e.printStackTrace();
             System.exit(1);
+        }
+    }
+
+    public static void updateStatus(File file){
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement("update download_manager.downloads set status = ? where file_name = ?");
+            preparedStatement.setInt(1, file.getStatusInteger());
+            preparedStatement.setString(2, file.getFileName());
+            preparedStatement.execute();
+        }catch (SQLException e){
+            e.printStackTrace();
+//            System.exit(1);
         }
     }
 

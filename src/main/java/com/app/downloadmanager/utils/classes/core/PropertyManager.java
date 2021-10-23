@@ -18,7 +18,7 @@ public class PropertyManager {
         try {
             file.createNewFile();
             FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write(String.format("%s=%s\n", Keys.DEFAULT_SAVE_LOCATION_KEY, System.getProperty("user.home")));
+            fileWriter.write(String.format("%s=%s\n", Keys.DEFAULT_SAVE_LOCATION_KEY, System.getProperty("user.home").replace(File.separator, "/"))); // This step ensures that the character '\' doesn't get saved in the property in Windows environment
             fileWriter.write(String.format("%s=%s\n", Keys.DEFAULT_PACKET_SIZE_KEY, 1024));
             fileWriter.close();
         } catch (IOException e) {
@@ -32,7 +32,7 @@ public class PropertyManager {
             Properties properties = new Properties();
             FileInputStream fileInputStream = new FileInputStream(Keys.APP_CONFIG_FILE_NAME);
             properties.load(fileInputStream);
-            AppProperties.DEFAULT_SAVE_LOCATION = properties.getProperty(Keys.DEFAULT_SAVE_LOCATION_KEY);
+            AppProperties.DEFAULT_SAVE_LOCATION = properties.getProperty(Keys.DEFAULT_SAVE_LOCATION_KEY).replace("/", File.separator); // This step does the necessary conversion of '/' to '\' in Windows environment
             AppProperties.DEFAULT_PACKET_SIZE = Integer.parseInt(properties.getProperty(Keys.DEFAULT_PACKET_SIZE_KEY));
         }catch (IOException e){
             System.out.println("Error reading property file!");
