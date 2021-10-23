@@ -1,5 +1,8 @@
 package com.app.downloadmanager.utils.classes.ui;
 
+import com.app.downloadmanager.controller.DownloadManagerController;
+import com.app.downloadmanager.model.File;
+import com.app.downloadmanager.utils.classes.core.DatabaseHandler;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -14,6 +17,11 @@ public class UserInterface {
         stage.setScene(new Scene(layoutManager.getDownloadManagerLayout()));
         stage.setResizable(false);
         stage.setTitle("Download Manager");
+        stage.setOnCloseRequest(event -> {
+            for(File file : DownloadManagerController.tableAllFiles){
+                DatabaseHandler.updateDownloadSizeAndProgress(file);
+            }
+        });
         return stage;
     }
 

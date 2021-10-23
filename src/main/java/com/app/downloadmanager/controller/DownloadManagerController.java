@@ -46,7 +46,7 @@ public class DownloadManagerController implements DownloadManagerUIEventListener
 
     @FXML private HBox buttonBox;
 
-    private ObservableList<File> tableAllFiles;
+    public static ObservableList<File> tableAllFiles;
 
     public static List<TableColumn<File, String>> listColumnsTableAll;
     private List<Downloader> downloaders;
@@ -267,7 +267,7 @@ public class DownloadManagerController implements DownloadManagerUIEventListener
     @Override
     public synchronized void onProgressChanged(File file) {
         tableAll.refresh();
-        DatabaseHandler.updateDownloadSizeAndProgress(file);
+//        DatabaseHandler.updateDownloadSizeAndProgress(file);
     }
 
     @Override
