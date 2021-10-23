@@ -4,13 +4,15 @@ import com.app.downloadmanager.utils.classes.core.Keys;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 
 public class URLChecker {
 
-    private static HttpsURLConnection httpsURLConnection;
+//    private static HttpsURLConnection httpsURLConnection;
+    private static HttpURLConnection httpURLConnection;
 
     public static final String KEY_CONTENT_TYPE = "content_type";
     public static final String KEY_FILE_NAME = "file_Name";
@@ -21,8 +23,8 @@ public class URLChecker {
     public static int isURLValid(String urlString){
         try {
             url = new URL(urlString);
-            httpsURLConnection = (HttpsURLConnection) url.openConnection();
-            if (httpsURLConnection.getResponseCode() == 200)
+            httpURLConnection = (HttpURLConnection) url.openConnection();
+            if (httpURLConnection.getResponseCode() == 200)
                 return Keys.STATUS_GET_SUCCESSFUL;
             else {
                 return Keys.STATUS_CONNECTION_ERROR;
@@ -41,14 +43,14 @@ public class URLChecker {
     public static HashMap<String, Object> getFileInfo(String urlString){
         HashMap<String, Object> fileInfo = new HashMap<>();
         fileInfo.put(KEY_FILE_NAME, getFileName(urlString));
-        fileInfo.put(KEY_CONTENT_LENGTH, httpsURLConnection.getContentLengthLong());
+        fileInfo.put(KEY_CONTENT_LENGTH, httpURLConnection.getContentLengthLong());
         fileInfo.put(KEY_CONTENT_TYPE, getContentType(urlString.substring(urlString.lastIndexOf('.'))));
-        if (httpsURLConnection.getContentLengthLong() == -1){
+        if (httpURLConnection.getContentLengthLong() == -1){
             fileInfo.put(KEY_PAUSABLE, false);
         }else {
             fileInfo.put(KEY_PAUSABLE, true);
         }
-        httpsURLConnection = null;
+        httpURLConnection = null;
         return fileInfo;
     }
 
